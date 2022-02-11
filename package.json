@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/EINBOX/wdio-selenoid-service/new/main.git"
+    "url": "git+https://github.com/EINBOX/wdio-selenoid-service"
   },
   "keywords": [],
   "author": "",
@@ -25,16 +25,19 @@
   "dependencies": {
     "@wdio/logger": "^7.0.0",
     "execa": "^5.0.0"
+    "fs-extra": "10.0.0",
+    "webdriverio": "7.16.4"
   },
   "devDependencies": {
     "@types/execa": "^2.0.0",
-    "@types/jest": "^26.0.20",
-    "@typescript-eslint/eslint-plugin": "^4.15.0",
-    "@typescript-eslint/parser": "^4.15.0",
-    "@wdio/cli": "^7.0.4",
-    "@wdio/jasmine-framework": "^7.0.4",
-    "@wdio/local-runner": "^7.0.4",
-    "@wdio/spec-reporter": "^7.0.4",
+    "@types/fs-extra": "9.0.13",
+    "@types/jest": "27.0.2",
+    "@typescript-eslint/eslint-plugin": "5.3.0",
+    "@typescript-eslint/parser": "5.3.0",
+    "@wdio/cli": "7.16.4",
+    "@wdio/jasmine-framework": "7.16.4",
+    "@wdio/local-runner": "7.16.4",
+    "@wdio/spec-reporter": "7.16.4",
     "@wdio/sync": "^7.0.4",
     "@wdio/types": "^7.0.3",
     "eslint": "^7.20.0",
@@ -45,6 +48,5 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.1",
     "typescript": "^4.1.5",
-    "wdio-selenoid-standalone-service": "^1.0.0"
   }
 }
