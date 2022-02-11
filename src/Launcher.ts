@@ -5,6 +5,9 @@ import logger, { Logger } from '@wdio/logger';
 import { SevereServiceError } from 'webdriverio';
 
 export interface ServiceOptions {
+    pathToBrowsersConfig?: string;
+    terminateWdioOnError?: boolean;
+    selenoidVersion?: string;
     skipAutoPullImage?: boolean;
     selenoidContainerName?: string;
     selenoidUiContainerName?: string;
@@ -13,6 +16,8 @@ export interface ServiceOptions {
     selenoidPort?: number;
     dockerArgs?: string[];
     selenoidUiArgs?: string[];
+    selenoidArgs?: string[];
+    skipAutoPullImages?: boolean;
 }
 
 export interface BrowserConfig {
@@ -50,7 +55,7 @@ export default class SelenoidStandaloneService {
         };
 
         this.log = logger('wdio-selenoid-service');
-        
+
         const platform = process.platform;
         if (platform === 'win32') {
             this.dockerSocketPath = '//var/run/docker.sock';
@@ -65,6 +70,7 @@ export default class SelenoidStandaloneService {
     async stopSelenoid(): Promise<string> {
         this.log.info('Stopping any running selenoid containers');
         try {
+            // @ts-ignore
             const { stdout } = await execa('docker', ['rm', '-f', this.options.selenoidContainerName as string]);
 
             return Promise.resolve(stdout);
@@ -72,7 +78,7 @@ export default class SelenoidStandaloneService {
             return Promise.resolve(error);
         }
     }
-    
+
 
     async startSelenoid(): Promise<string> {
         this.log.info('Starting Selenoid Container');
@@ -96,6 +102,7 @@ export default class SelenoidStandaloneService {
         ];
 
         try {
+            // @ts-ignore
             const { stdout } = await execa('docker', startArgs);
 
             return Promise.resolve(stdout);
@@ -120,7 +127,7 @@ export default class SelenoidStandaloneService {
 
         return Promise.resolve();
     }
-    
+
     async pullRequiredBrowserFiles(): Promise<void> {
         try {
             // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -139,6 +146,7 @@ export default class SelenoidStandaloneService {
                     this.log.info(`Skipping pull. Image: ${image} already exists`);
                 } else {
                     this.log.info(`Pulling image ${image}`);
+                    // @ts-ignore
                     await execa('docker', ['pull', image]);
                 }
             }
@@ -148,7 +156,7 @@ export default class SelenoidStandaloneService {
 
         return Promise.resolve();
     }
-    
+
     async pullRequiredSelenoidVersion(): Promise<void> {
         const image = `aerokube/selenoid:${this.options.selenoidVersion as string}`;
 
@@ -157,6 +165,7 @@ export default class SelenoidStandaloneService {
         } else {
             try {
                 this.log.info(`Pulling selenoid image 'aerokube/selenoid:${this.options.selenoidVersion}'`);
+                // @ts-ignore
                 await execa('docker', ['pull', `aerokube/selenoid:${this.options.selenoidVersion}`]);
             } catch (error) {
                 this.log.error(error);
@@ -165,10 +174,11 @@ export default class SelenoidStandaloneService {
 
         return Promise.resolve();
     }
-    
+
     async stopSelenoidUi(): Promise<string> {
         this.log.info('Stopping any running selenoid-ui containers');
         try {
+            // @ts-ignore
             const { stdout } = await execa('docker', ['rm', '-f', this.options.selenoidUiContainerName as string]);
 
             return Promise.resolve(stdout);
@@ -176,7 +186,7 @@ export default class SelenoidStandaloneService {
             return Promise.resolve(error);
         }
     }
-    
+
     async startSelenoidUi(): Promise<string> {
         this.log.info('Starting Selenoid-Ui Container');
         const dockerArgs = this.options.dockerArgs || [];
@@ -199,6 +209,7 @@ export default class SelenoidStandaloneService {
         ];
 
         try {
+            // @ts-ignore
             const { stdout } = await execa('docker', startArgs);
 
             return Promise.resolve(stdout);
@@ -210,6 +221,7 @@ export default class SelenoidStandaloneService {
     async doesImageExist(imageName: string): Promise<boolean> {
         try {
             this.log.debug(`Checking image ${imageName} exists`);
+            // @ts-ignore
             const { stdout } = await execa('docker', ['image', 'ls', '-f', `reference=${imageName}`]);
             const results = stdout.split('\n');
             return Promise.resolve(results.length >= 2);
@@ -227,6 +239,7 @@ export default class SelenoidStandaloneService {
         } else {
             try {
                 this.log.info(`Pulling selenoid image 'aerokube/selenoid-ui:${this.options.selenoidUiVersion}'`);
+                // @ts-ignore
                 await execa('docker', ['pull', `aerokube/selenoid-ui:${this.options.selenoidUiVersion}`]);
             } catch (error) {
                 this.log.error(error);
@@ -244,6 +257,7 @@ export default class SelenoidStandaloneService {
         this.log.info(`Waiting for Selenoid to be Running`);
         for (let i = 0; i < 10; i += 1) {
             try {
+                // @ts-ignore
                 const { stdout } = await execa('docker', ['ps', '-f', `name=${this.options.selenoidContainerName}`]);
                 const results = stdout.split('\n');
                 if (results.length >= 2) {
@@ -264,7 +278,7 @@ export default class SelenoidStandaloneService {
          // kill existing selenoid and UI if running
         await this.stopSelenoid();
         await this.stopSelenoidUi();
-        
+
         // check browsers file
         await this.verifySelenoidBrowserConfig();
 
